@@ -1,0 +1,36 @@
+version: '3'
+services:
+   nginx:
+     image: nginx:latest
+     container_name: nginxfeva
+     restart: always
+     volumes:
+       - ./nginx.conf:/etc/nginx/nginx.conf
+       - ./dockcrt.pem:/etc/certs/dockcrt.pem
+       - ./dockkey.pem:/etc/certs/dockkey.pem
+       - ./bubliki.conf:/etc/nginx/conf.d/bubliki.conf
+     ports:
+      - 80:80
+      - 443:443
+     networks:
+      -  mynet
+
+   regv2:
+    image: registry:2
+    container_name: regv2
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY:  /var/lib/registry 
+    volumes:
+      - ./regdata:/var/lib/registry
+      - ./auth:/auth
+    
+
+
+networks:
+    mynet:
